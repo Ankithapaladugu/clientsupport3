@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6f61, #6b5b95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            width: 300px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #6b5b95;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #ff6f61;
+        }
+
+        .loading {
+            background: #ff6f61;
+            cursor: not-allowed;
+        }
+
+        .success-btn {
+            background: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Contact Us</h2>
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" id="last_name" name="last_name" required>
+            </div>
+            <div class="form-group">
+                <label for="phone_no">Phone Number - Including Country Code</label>
+                <input type="tel" id="phone_no" name="phone_no" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <button type="submit" id="submitBtn" class="submit-btn">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.textContent = 'Our Agent will call you in 2-5 minutes';
+            submitBtn.classList.add('loading');
+
+            const formData = {
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                phone_no: document.getElementById('phone_no').value,
+                email: document.getElementById('email').value
+            };
+
+            fetch('https://api-f1db6c.stack.tryrelevance.com/latest/studios/57efa4b6-df23-4b31-9932-484e0eea5362/trigger_webhook?project=40f9760672f4-47b5-89f9-e3cdb99d658d', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': '40f9760672f4-47b5-89f9-e3cdb99d658d:sk-NTlhODAwOWYtMTZkMS00ODNmLWIzNDQtZjEwMDEyNDEzNWQ4' // Replace with your actual API key
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.text();
+            })
+            .then(() => {
+                submitBtn.textContent = 'Submitted ✔️';
+                submitBtn.classList.remove('loading');
+                submitBtn.classList.add('success-btn');
+                submitBtn.disabled = true;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Our AI Agent will Contact you Soon!!');
+                submitBtn.textContent = 'Submit';
+                submitBtn.classList.remove('loading');
+            });
+        });
+    </script>
+</body>
+</html>
